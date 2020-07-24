@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "TheoryFinder": {
+      "commandName": "Project",
+      "commandLineArgs": "\"C:\\Users\\dt-impact\\Desktop\\TopStarProjects\\Dapper\\Dapper.sln\""
+    }
+  }
+}
