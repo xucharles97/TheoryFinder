@@ -1,0 +1,5 @@
+Notes that we have on ModuleAdapterTests.cs
+
+Copy and paste PUT that we have been working on to 
+text file and push them to TheoryFinder repo under directory
+SubjectNotes.
