@@ -1,5 +1,131 @@
-Notes that we have on ModuleAdapterTests.cs
+[Theory]
+        [InlineData("x-ms-client-request-id")]
+        [InlineData("client-request-id")]
+        [InlineData("x-ms-request-id")]
+        [InlineData("request-id")]
+        [InlineData("X-MS-CLIENT-REQUEST-ID")]
+        [InlineData("CLIENT-REQUEST-ID")]
+        [InlineData("X-MS-REQUEST-ID")]
+        [InlineData("REQUEST-ID")]
+        [Trait(Category.AcceptanceType, Category.CheckIn)]
+        public void TestClientRequestHandler(string headerName)
+        {
+            //Creates an EventStore object and initializes a new MockTelemetryProvider with it
+            //MockTelemetryProvider.Create() is a shell method used to initialize MockTelemetryProvider
+            var store = new EventStore(); 
+            var provider = MockTelemetryProvider.Create(store) as MockTelemetryProvider;
+            //Initializes AzModule
+            //AzModule is an implementation of the IDisposable interface, which releases unmanaged resources
+            var module = new AzModule(new MockCommandRuntime(), store, provider);
 
-Copy and paste PUT that we have been working on to 
-text file and push them to TheoryFinder repo under directory
-SubjectNotes.
+            //initializes a new Guid and an Http "Ok" response to be used later
+            //Also initializes a new Http Request based on the Get Method and a given Uri
+            //Adds the pre-existing headerName/new guid as a header with its corresponding id
+            string id = Guid.NewGuid().ToString();
+            var response = new HttpResponseMessage(System.Net.HttpStatusCode.OK);
+            var request = new HttpRequestMessage { Method = HttpMethod.Get, RequestUri = new Uri("https://microsoft.azure.com/subscriptions") };
+            request.Headers.Add(headerName, id);
+
+            //Creates a new EventData object with the response/request objects from earlier
+            EventData data = new EventData { Id = Events.CmdletProcessRecordAsyncStart, RequestMessage = request, ResponseMessage = response };
+            var signalEvents = new List<EventArgs>();
+            // Create a QOS record
+            //id = processRecordId and CorrelationId
+            //creates qos using _telemetry (provider variable from before), with the id variable as parameters (processRecordId and CorrelationId)
+            Func<EventData> eventDataFunc =  () => data;
+            Func<string, CancellationToken, Func<EventArgs>, Task> signalFunc = (nid, token, getEventData) => ProcessSignal(signalEvents, nid, token, getEventData);
+            // Class under test: AzModule MUT: OnBeforeCall and OnProcessRecordAsyncStart
+            // STARTING Qos event - this has its own thread.
+            module.OnProcessRecordAsyncStart(Events.CmdletProcessRecordAsyncStart, 
+                CancellationToken.None, eventDataFunc, signalFunc, id, null, "", id).GetAwaiter().GetResult(); //this current block until async task returns
+            
+            
+            data.Id = Events.BeforeCall;
+            
+            module.OnBeforeCall(Events.BeforeCall, CancellationToken.None, () => data, (nid, token, getEventData) => ProcessSignal(signalEvents, nid, token, getEventData), id).GetAwaiter().GetResult();
+            //checks that the provider (_telemetry in module) contains the id value
+
+            //module.OnProcessRecordAsyncEnd(Events.CmdletProcessRecordAsyncStart,
+            //   CancellationToken.None, eventDataFunc, signalFunc, id).GetAwaiter().GetResult(); //omitting this call makes qos.IsSucess === false this current block until async task returns
+
+            Assert.True(provider.ContainsKey(id)); // figure what code adds the id to provide.
+            
+            AzurePSQoSEvent qos = provider[id];
+            //checks that the qos associated with id in the provider variable is not null and has a ClientRequestId equivalent to the id variable
+            Assert.NotNull(qos); // this is a valid process
+            //Assert.False(qos.IsSuccess); // The qos is false event has not been ended by calling module.OnProcessRecordAsyncEnd -- Charles knows 9
+           
+            Assert.Equal(id, qos.ClientRequestId); // does this pass when the GetRequest is successful? 
+            //Assert.True(qos != null && qos.IsSuccess);// added by us 
+
+            // you can also make the get request fail on purpose and see if this fails
+            // Can we be better?
+            provider.Clear();
+        }
+        //Charles know 14 -- create better PUT
+        // Charles 
+
+        //unsure how to format this
+        [Theory]
+        //[InlineData("x-ms-client-request-id", { Id = Events.CmdletProcessRecordAsyncStart, RequestMessage = new HttpResponseMessage(System.Net.HttpStatusCode.OK), ResponseMessage = new HttpRequestMessage { Method = HttpMethod.Get, RequestUri = new Uri("https://microsoft.azure.com/subscriptions") } })]
+        [InlineData("x-ms-client-request-id")]
+        [InlineData("client-request-id")]
+        [InlineData("x-ms-request-id")]
+        [InlineData("request-id")]
+        [InlineData("X-MS-CLIENT-REQUEST-ID")]
+        [InlineData("CLIENT-REQUEST-ID")]
+        [InlineData("X-MS-REQUEST-ID")]
+        [InlineData("REQUEST-ID")]
+        [Trait(Category.AcceptanceType, Category.CheckIn)]
+        public void CharlesTestClientRequestHandler(string headerName, EventData data)
+        {
+            //Creates an EventStore object and initializes a new MockTelemetryProvider with it
+            //MockTelemetryProvider.Create() is a shell method used to initialize MockTelemetryProvider
+            var store = new EventStore();
+            var provider = MockTelemetryProvider.Create(store) as MockTelemetryProvider;
+            //Initializes AzModule
+            //AzModule is an implementation of the IDisposable interface, which releases unmanaged resources
+            var module = new AzModule(new MockCommandRuntime(), store, provider);
+
+            //initializes a new Guid and an Http "Ok" response to be used later
+            //Also initializes a new Http Request based on the Get Method and a given Uri
+            //Adds the pre-existing headerName/new guid as a header with its corresponding id
+            string id = Guid.NewGuid().ToString();
+            HttpRequestMessage request = (HttpRequestMessage)data.RequestMessage;
+            request.Headers.Add(headerName, id);
+
+            //Creates a new EventData object with the response/request objects from earlier
+            var signalEvents = new List<EventArgs>();
+            // Create a QOS record
+            //id = processRecordId and CorrelationId
+            //creates qos using _telemetry (provider variable from before), with the id variable as parameters (processRecordId and CorrelationId)
+            Func<EventData> eventDataFunc = () => data;
+            Func<string, CancellationToken, Func<EventArgs>, Task> signalFunc = (nid, token, getEventData) => ProcessSignal(signalEvents, nid, token, getEventData);
+            // Class under test: AzModule MUT: OnBeforeCall and OnProcessRecordAsyncStart
+            // STARTING Qos event - this has its own thread.
+            module.OnProcessRecordAsyncStart(Events.CmdletProcessRecordAsyncStart,
+                CancellationToken.None, eventDataFunc, signalFunc, id, null, "", id).GetAwaiter().GetResult(); //this current block until async task returns
+
+
+            data.Id = Events.BeforeCall;
+
+            module.OnBeforeCall(Events.BeforeCall, CancellationToken.None, () => data, (nid, token, getEventData) => ProcessSignal(signalEvents, nid, token, getEventData), id).GetAwaiter().GetResult();
+            //checks that the provider (_telemetry in module) contains the id value
+
+            //module.OnProcessRecordAsyncEnd(Events.CmdletProcessRecordAsyncStart,
+            //   CancellationToken.None, eventDataFunc, signalFunc, id).GetAwaiter().GetResult(); //omitting this call makes qos.IsSucess === false this current block until async task returns
+
+            Assert.True(provider.ContainsKey(id)); // figure what code adds the id to provide.
+
+            AzurePSQoSEvent qos = provider[id];
+            //checks that the qos associated with id in the provider variable is not null and has a ClientRequestId equivalent to the id variable
+            Assert.NotNull(qos); // this is a valid process
+                                 //Assert.False(qos.IsSuccess); // The qos is false event has not been ended by calling module.OnProcessRecordAsyncEnd -- Charles knows 9
+
+            Assert.Equal(id, qos.ClientRequestId); // does this pass when the GetRequest is successful? 
+            //Assert.True(qos != null && qos.IsSuccess);// added by us 
+
+            // you can also make the get request fail on purpose and see if this fails
+            // Can we be better?
+            provider.Clear();
+        }
