@@ -84,19 +84,58 @@ namespace TheoryFinder
             List<String> assertStatements = new List<string>
             {
                 "Assert",
+                "AssertUpdateNotCalled",
+                "AssertUpdateConsentCalled",
+                "AssertUpdateConsentNotCalled",
+                "AssertStandardEnvironments",
+                "AssertValidToken",
+                "AssertEscaped",
+                "AssertJobIsCompleteDueToTaskFailure",
+                "AssertItem",
+                "AssertTextRange",
+                "AssertMenuItemTextAndLinkedSortType",
+                "AssertOnlyCheckedItemIs",
+                "AssertListCount",
+                "AssertScope",
+                "AssertHasLog(",
+                "AssertHasLogRpcConnectionError",
+                "AssertExtension.ValidationResultIsError",
+                "AssertExtension.ValidationResultIsSuccess",
+                "AssertExists",
+                "AssertDoesNotExist",
+                "AssertMessagesWithCursorForRange",
                 "All",
+                "AreEqual",
+                "AreNotEqual",
+                "AreSame",
+                "AreNotSame",
                 "Collection",
                 "Contains",
                 "DoesNotContain",
-                "Empty",
+                "DoesNotThrow",
+                "Empty(",
                 "EndsWith",
                 "Equal",
                 "Equals",
+                "Fail",
                 "False",
+                "Greater(",
+                "GreaterOrEqual(",
                 "InRange",
-                "IsAssignableFrom",
+                "Inconclusive",
+                "IsAssignableFrom",                
+                "IsEmpty",
+                "IsFalse",
+                "IsInstanceOf",
+                "IsNotEmpty",
+                "IsNotNull",
                 "IsNotType",
+                "IsNull",
                 "IsType",
+                "IsTrue",
+                "Less(",
+                "Less (",
+                "LessOrEqual",
                 "Matches",
                 "NotEmpty",
                 "NotEqual",
@@ -105,6 +144,7 @@ namespace TheoryFinder
                 "NotSame",
                 "NotStrictEqual",
                 "Null",
+                "Pass",
                 "ProperSubset",
                 "ProperSuperset",
                 "PropertyChanged",
@@ -121,10 +161,13 @@ namespace TheoryFinder
                 "StrictEqual",
                 "Subset",
                 "Superset",
-                "Throws",
-                "ThrowsAny",
+                "Throws<",
+                "Throws(",
+                "Throws (",
+                "ThrowsAny<",
                 "ThrowsAnyAsync",
                 "ThrowsAsync",
+                "That",
                 "True"
 
             };
@@ -189,6 +232,7 @@ namespace TheoryFinder
                         if(toAdd.Count() > 0)
                         {
                             mapDocToPUTNames.Add(filepath, toAdd);
+                            
                         }
                         
                     }
@@ -239,12 +283,12 @@ namespace TheoryFinder
             //printFirstLine(mapDocToUnitNames);
             //Console.WriteLine(getTotalTestLines(mapDocToPUTNames) + " PUT Lines");
             //Console.WriteLine(getTotalTestLines(mapDocToUnitNames) + " Unit Test Lines");
-            Dictionary<string, int> putAssertCount = getAssertCount(assertStatements, mapDocToPUTNames);
-            foreach(KeyValuePair<string, int> element in putAssertCount)
+            Dictionary<string, int> assertCount = getAssertCount(assertStatements, mapDocToUnitNames);
+            foreach(KeyValuePair<string, int> element in assertCount)
             {
                 if (element.Value > 0)
                 {
-                    Console.WriteLine(element.Value + " instances of Assert." + element.Key + " in PUTs");
+                    Console.WriteLine(element.Value + " instances of Assert." + element.Key + " in Unit Tests");
                 }
             }
 
@@ -350,11 +394,12 @@ namespace TheoryFinder
             Dictionary<string, int> assertCount = new Dictionary<string, int>();
             foreach (string assertion in asserts)
             {
+
                 int attributeCount = 0;
                 string assertStatement;
-                if (assertion.Equals("Assert"))
+                if (assertion.Contains("Assert"))
                 {
-                    assertStatement = "Assert";
+                    assertStatement = assertion;
                 }
                 else
                 {
@@ -371,10 +416,34 @@ namespace TheoryFinder
                         {
                             if (statement.ToString().StartsWith(assertStatement))
                             {
-                                //if (assertStatement.Equals("Assert"))
-                                //{
-                                //    Console.WriteLine(statement);
-                                //}
+                                //if (assertStatement.Equals("Assert") && !statement.ToString().StartsWith("Assert."))
+                                if (assertStatement.Equals("Assert"))
+                                {
+                                    //check if the assert isn't contained in the list
+                                    bool newStatement = true;
+                                  
+                                    
+                                    for (int i = 1; i < asserts.Count() && newStatement; i++)
+                                    {
+                                        string toCheck;
+                                        if (asserts[i].StartsWith("Assert"))
+                                        {
+                                            toCheck = asserts[i];
+                                        } else
+                                        {
+                                            toCheck = "Assert." + asserts[i];
+                                        }
+                                        if (statement.ToString().Contains(toCheck))
+                                        {
+                                            newStatement = false;
+                                        }
+                                    }
+                                    if (newStatement)
+                                    {
+                                        Console.WriteLine(statement);
+                                    }
+                                    
+                                }
                                 attributeCount++;
                             }
 

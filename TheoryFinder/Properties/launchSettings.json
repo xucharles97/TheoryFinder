@@ -2,7 +2,7 @@
   "profiles": {
     "TheoryFinder": {
       "commandName": "Project",
-      "commandLineArgs": "\"C:\\Users\\dt-impact\\Desktop\\TopStarProjects\\Dapper\\Dapper.sln\""
+      "commandLineArgs": "\"C:\\Users\\dt-impact\\Desktop\\TrendingProjects\\azure-powershell\\src\\Batch\\Batch.sln\""
     }
   }
 }
