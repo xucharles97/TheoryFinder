@@ -6,7 +6,7 @@ Write-Host $rootDir
 $fullPath = Resolve-Path -Path $rootDir
 # % is alias for ForEach-Object
 
-# One way of writtig it:
+# One way of writig it:
 
 #Get-ChildItem $fullPath -recurse | where {$_.Extension -eq ".sln"}|%{
 #    Write-Host $_.FullName
@@ -16,5 +16,12 @@ $fullPath = Resolve-Path -Path $rootDir
 $slnFiles = Get-ChildItem $fullPath -recurse | where {$_.Extension -eq ".sln"}
 
 foreach($sln in $slnFiles){
+    #Get solution content useful for checking which year(format solution is).
+    #$slnContent = get-content  $sln.FullName -Delimiter "\r\n"
+    #Write-Host $slnContent
+    #exit 0
     Write-Host $sln.FullName
 }
+
+Write-Host $("Total solutions: "+$slnFiles.Length.ToString())
+
