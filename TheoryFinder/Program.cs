@@ -291,11 +291,43 @@ namespace TheoryFinder
                     Console.WriteLine(element.Value + " instances of Assert." + element.Key + " in Unit Tests");
                 }
             }*/
-            Dictionary<string, string> assertParameters = getAssertParameters(mapDocToUnitNames);
-            foreach(KeyValuePair<string, string> element in assertParameters)
+            
+            Dictionary<string, List<List<ParameterSyntax>>> assertParameters = getAssertParameters(assertStatements, mapDocToPUTNames);
+            foreach(KeyValuePair<string, List<List<ParameterSyntax>>> element in assertParameters)
             {
-                Console.WriteLine(element.Value);
+                if (element.Value.Count == 0)
+                {
+                    continue;
+                }
+                foreach(List<ParameterSyntax> parameterList in element.Value)
+                {
+                    Console.Write(element.Key + " ");
+                    foreach(ParameterSyntax parameter in parameterList)
+                    {
+                        Console.Write(parameter.Type + " " + parameter.ToString() + ", ");
+                    }
+                    Console.WriteLine();
+                }
             }
+            /*Dictionary<string, List<List<string>>> assertParameters = getAssertParametersAsString(assertStatements, mapDocToPUTNames);
+            foreach (KeyValuePair<string, List<List<string>>> element in assertParameters)
+            {
+                if (element.Value.Count == 0)
+                {
+                    continue;
+                }
+                foreach (List<string> parameterList in element.Value)
+                {
+                    Console.Write(element.Key);
+                    foreach (string parameter in parameterList)
+                    {
+                        Console.Write(" " + parameter + ", ");
+                    }
+                    Console.WriteLine();
+                }
+            }*/
+
+
 
 
         }
@@ -402,7 +434,7 @@ namespace TheoryFinder
 
                 int attributeCount = 0;
                 string assertStatement;
-                if (assertion.Contains("Assert"))
+                if (assertion.StartsWith("Assert"))
                 {
                     assertStatement = assertion;
                 }
@@ -461,33 +493,55 @@ namespace TheoryFinder
             return assertCount;
         }
 
-        public static Dictionary<string, string> getAssertParameters(Dictionary<string, IEnumerable<MethodDeclarationSyntax>> dictionary)
+        public static Dictionary<string, List<List<ParameterSyntax>>> getAssertParameters(List<string> asserts, Dictionary<string, IEnumerable<MethodDeclarationSyntax>> dictionary)
         {
-            Dictionary<string, string> assertParameters = new Dictionary<string, string>();
+            Dictionary<string, List<List<ParameterSyntax>>> assertParameters = new Dictionary<string, List<List<ParameterSyntax>>>();
             int i = 0;
-
-            foreach (KeyValuePair<string, IEnumerable<MethodDeclarationSyntax>> element in dictionary)
+            foreach (string assertion in asserts)
             {
-                foreach (MethodDeclarationSyntax method in element.Value)
+                string assertStatement;
+                if (assertion.Equals("Assert"))
                 {
+                    continue;
+                }
+                else if (assertion.StartsWith("Assert"))
+                {
+                    assertStatement = assertion;
+                }
+                else
+                {
+                    assertStatement = "Assert." + assertion;
+                }
+                List<List<ParameterSyntax>> parameters = new List<List<ParameterSyntax>>();
 
-                    List<StatementSyntax> expressionNodes = method.DescendantNodes().OfType<StatementSyntax>().ToList();
-
-                    foreach (StatementSyntax statement in expressionNodes)
+                foreach (KeyValuePair<string, IEnumerable<MethodDeclarationSyntax>> element in dictionary)
+                {
+                    foreach (MethodDeclarationSyntax method in element.Value)
                     {
-                        if (statement.ToString().StartsWith("Assert") && statement.ToString().IndexOf('(') > 0 && statement.ToString().LastIndexOf(')') != -1) 
-                        {
-                            Console.WriteLine(statement.ToString());
-                            Console.WriteLine("Length: " + statement.ToString().Length);
-                            Console.WriteLine("( index " + statement.ToString().IndexOf('('));
-                            Console.WriteLine(") index " + statement.ToString().LastIndexOf(')'));
-                            Console.WriteLine(statement.ToString().Substring(1 + statement.ToString().IndexOf('('), statement.ToString().LastIndexOf(')') - statement.ToString().IndexOf('(') - 1));
-                            assertParameters.Add(i.ToString(), statement.ToString().Substring(statement.ToString().IndexOf('(') + 1, statement.ToString().LastIndexOf(')') - statement.ToString().IndexOf('(') - 1));
-                            i++;
-                        }
 
+                        List<StatementSyntax> expressionNodes = method.DescendantNodes().OfType<StatementSyntax>().ToList();
+                        foreach (StatementSyntax statement in expressionNodes)
+                        {
+                            //if (statement.ToString().StartsWith(assertStatement) && statement.ToString().IndexOf('(') > 0 && statement.ToString().LastIndexOf(')') != -1)
+                            if (statement.ToString().StartsWith(assertStatement))
+                            {
+                                /*Console.WriteLine(statement.ToString());
+                                Console.WriteLine("Length: " + statement.ToString().Length);
+                                Console.WriteLine("( index " + statement.ToString().IndexOf('('));
+                                Console.WriteLine(") index " + statement.ToString().LastIndexOf(')'));
+                                Console.WriteLine(statement.ToString().Substring(1 + statement.ToString().IndexOf('('), statement.ToString().LastIndexOf(')') - statement.ToString().IndexOf('(') - 1));
+                                */
+                                
+                                
+                                List<ParameterSyntax> parameterList = statement.DescendantNodes().OfType<ParameterSyntax>().ToList();
+                                parameters.Add(parameterList);
+                            }
+
+
+                        }
                     }
                 }
+                assertParameters.Add(assertStatement, parameters);
             }
                 
             
@@ -495,6 +549,64 @@ namespace TheoryFinder
             return assertParameters;
         }
 
+        public static Dictionary<string, List<List<string>>> getAssertParametersAsString(List<string> asserts, Dictionary<string, IEnumerable<MethodDeclarationSyntax>> dictionary)
+        {
+            Dictionary<string, List<List<string>>> assertParameters = new Dictionary<string, List<List<string>>>();
+            int i = 0;
+            foreach (string assertion in asserts)
+            {
+                string assertStatement;
+                if (assertion.Equals("Assert"))
+                {
+                    continue;
+                }
+                else if (assertion.StartsWith("Assert"))
+                {
+                    assertStatement = assertion;
+                }
+                else
+                {
+                    assertStatement = "Assert." + assertion;
+                }
+                List<List<string>> parameters = new List<List<string>>();
+
+                foreach (KeyValuePair<string, IEnumerable<MethodDeclarationSyntax>> element in dictionary)
+                {
+                    foreach (MethodDeclarationSyntax method in element.Value)
+                    {
+
+                        List<StatementSyntax> expressionNodes = method.DescendantNodes().OfType<StatementSyntax>().ToList();
+                        foreach (StatementSyntax statement in expressionNodes)
+                        {
+                            //if (statement.ToString().StartsWith(assertStatement) && statement.ToString().IndexOf('(') > 0 && statement.ToString().LastIndexOf(')') != -1)
+                            if (statement.ToString().StartsWith(assertStatement))
+                            {
+                                /*Console.WriteLine(statement.ToString());
+                                Console.WriteLine("Length: " + statement.ToString().Length);
+                                Console.WriteLine("( index " + statement.ToString().IndexOf('('));
+                                Console.WriteLine(") index " + statement.ToString().LastIndexOf(')'));
+                                Console.WriteLine(statement.ToString().Substring(1 + statement.ToString().IndexOf('('), statement.ToString().LastIndexOf(')') - statement.ToString().IndexOf('(') - 1));
+                                */
+
+                                string parametersAsString = statement.ToString().Substring(statement.ToString().IndexOf('(') + 1, statement.ToString().LastIndexOf(')') - statement.ToString().IndexOf('(') - 1);
+                                List<string> parameterList = parametersAsString.Split(',').Select(s => s.Trim()).ToList();
+                                parameters.Add(parameterList);
+                                /*
+                                List<ParameterSyntax> parameterList = statement.DescendantNodes().OfType<ParameterSyntax>().ToList();
+                                parameters.Add(parameterList);*/
+                            }
+
+
+                        }
+                    }
+                }
+                assertParameters.Add(assertStatement, parameters);
+            }
+
+
+
+            return assertParameters;
+        }
 
 
         /* args: Test class text, attribute name
