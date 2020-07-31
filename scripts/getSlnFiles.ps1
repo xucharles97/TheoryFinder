@@ -1,13 +1,13 @@
 [CmdletBinding(PositionalBinding=$true)]
 Param([string] $rootDir)
 
-Write-Host $rootDir
+ 
 
 $fullPath = Resolve-Path -Path $rootDir
+Write-Host $("Debug "+$fullPath)
 # % is alias for ForEach-Object
 
 # One way of writig it:
-
 #Get-ChildItem $fullPath -recurse | where {$_.Extension -eq ".sln"}|%{
 #    Write-Host $_.FullName
 #}
