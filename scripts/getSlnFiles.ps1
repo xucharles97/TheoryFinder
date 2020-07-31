@@ -13,7 +13,9 @@ Write-Host $("Debug "+$fullPath)
 #}
 
 #another way of writing it
-$slnFiles = Get-ChildItem $fullPath -recurse | where {$_.Extension -eq ".sln"}
+# if return only one .sln file then returning type is FileInfo ortherwise return type is object object[]
+$slnFiles = Get-ChildItem $fullPath -recurse | where {$_.Extension -eq ".sln"} 
+Write-Host $slnFiles.GetType()
 
 foreach($sln in $slnFiles){
     #Get solution content useful for checking which year(format solution is).
@@ -23,5 +25,5 @@ foreach($sln in $slnFiles){
     Write-Host $sln.FullName
 }
 
-Write-Host $("Total solutions: "+$slnFiles.Length.ToString())
+Write-Host $("Total solutions: "+$slnFiles.Count.ToString())
 
