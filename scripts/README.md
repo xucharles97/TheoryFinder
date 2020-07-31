@@ -8,5 +8,7 @@ a. getSlnFile.ps1
     <script name> <path(full or relative) to root directory of project>
     .\getSlnFiles.ps1 ..\..\..\subjects\trending\azure-powershell\
     
+b. gerDirRepos.ps1
 
-     
+    How to run:
+    .\getDirRepos.ps1 ..\..\..\subjects\topStarred
