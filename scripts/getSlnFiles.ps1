@@ -23,6 +23,7 @@ foreach($sln in $slnFiles){
     #Write-Host $slnContent
     #exit 0
     Write-Host $sln.FullName
+    C:\Users\Synthesis\Research\AnnaCharles\tools\TheoryFinder\TheoryFinder\bin\Debug\net472\TheoryFinder.exe $sln.FullName
 }
 
 Write-Host $("Total solutions: "+$slnFiles.Count.ToString())
