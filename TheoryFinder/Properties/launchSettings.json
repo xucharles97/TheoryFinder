@@ -2,7 +2,8 @@
   "profiles": {
     "TheoryFinder": {
       "commandName": "Project",
-      "commandLineArgs": "\"C:\\Users\\Synthesis\\Research\\AnnaCharles\\subjects\\trending\\azure-powershell\\src\\Accounts\\Accounts.sln\""
+      "commandLineArgs": "C:\\Users\\Synthesis\\Research\\AnnaCharles\\subjects\\dotnet\\roslyn\\Roslyn.sln",
+      "remoteDebugEnabled": false
     }
   }
 }
