@@ -199,7 +199,13 @@ namespace TheoryFinder
                 int unitProjCount = 0;
                 foreach (Document document in project.Documents)
                 {
-
+                    /* Angello is testing code */
+                    //SyntaxNode  root = document.GetSyntaxRootAsync().Result;
+                    //PUTCollector theoryCollector = new PUTCollector();
+                    //theoryCollector.Visit(root);
+                    //Environment.Exit(0); 
+                    /* Angello is no longer testing code */
+                    
                     string filepath = document.FilePath;
                     string text = File.ReadAllText(filepath);
 
