@@ -322,12 +322,12 @@ namespace TheoryFinder
                 foreach (Document document in project.Documents)
                 {
                     /* Angello is testing code */
-                    //SyntaxNode  root = document.GetSyntaxRootAsync().Result;
+                    //SyntaxNode root = document.GetSyntaxRootAsync().Result;
                     //PUTCollector theoryCollector = new PUTCollector();
                     //theoryCollector.Visit(root);
-                    //Environment.Exit(0); 
+                    //Environment.Exit(0);
                     /* Angello is no longer testing code */
-                    
+
                     string filepath = document.FilePath;
                     string text = File.ReadAllText(filepath);
 
@@ -395,6 +395,10 @@ namespace TheoryFinder
             Console.WriteLine(getTotalTestLines(mapDocToUnitNames) + " Unit Test Lines");
 
             Dictionary<string, int> putAssertCount = getAssertCount(assertStatements, mapDocToPUTNames);
+            /* Get parameters of assert statements
+            */
+            getAssertParams(mapDocToPUTNames);
+
             foreach (KeyValuePair<string, int> element in putAssertCount)
             {
                 if (element.Value > 0)
@@ -411,6 +415,7 @@ namespace TheoryFinder
                     Console.WriteLine(element.Value + " instances of Assert." + element.Key + " in Unit Tests");
                 }
             }
+            #region codeIMayneedLater
             /*
             Dictionary<string, List<List<ParameterSyntax>>> assertParameters = getAssertParameters(assertStatements, mapDocToPUTNames);
             foreach(KeyValuePair<string, List<List<ParameterSyntax>>> element in assertParameters)
@@ -446,10 +451,38 @@ namespace TheoryFinder
                     Console.WriteLine();
                 }
             }*/
+            #endregion
 
 
 
+        }
+        public static void getAssertParams(Dictionary<string,IEnumerable<MethodDeclarationSyntax>> mapDocToPUTNames)
+        {
+            foreach(var keyValPair in mapDocToPUTNames)
+            {
+                foreach(var put in keyValPair.Value)
+                {
+                    Console.WriteLine(put);
+                    /* Charles, to number of lines for PUT/UnitTest, just body.Statements.Count*/
+                    BlockSyntax body = put.Body;
+                    SyntaxList<StatementSyntax> statements = body.Statements;
 
+                    var likelyListOfAsserts = body.DescendantNodes().OfType<MemberAccessExpressionSyntax>().ToList();
+                    foreach (MemberAccessExpressionSyntax statement in likelyListOfAsserts)
+                    {
+                        //var exp = (LocalDeclarationStatementSyntax)statement;
+                        //Todo: Filter so that we only get asserts -- if condition may suffice
+                        Console.WriteLine(statement);
+                        
+                    }
+
+
+                    //Console.WriteLine(keyValPair.Key);
+                    //Console.WriteLine(put);
+                    //Console.WriteLine(put.GetType());
+
+                }
+            }
         }
 
 
