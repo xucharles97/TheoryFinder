@@ -15,20 +15,19 @@ namespace TheoryFinder
         {
             //base.VisitMethodDeclaration(node);
             SyntaxList<AttributeListSyntax> attributes = node.AttributeLists;
-            
-            foreach( AttributeListSyntax attList in attributes)
+
+            foreach (AttributeListSyntax attList in attributes)
             {
-                
                 //Console.WriteLine(attList);
                 //att has AttributeSyntax type
-                var targetAtt  = attList.Attributes.Where( att => att.Name.ToString().Equals("Fact"));
+                var targetAtt = attList.Attributes.Where(att => att.Name.ToString().Equals("Fact"));
                 foreach (var a in targetAtt)
                 {
+                    Console.WriteLine("Charles");
                     Console.WriteLine(a);
                 }
             }
-            
-        
         }
+
     }
 }
