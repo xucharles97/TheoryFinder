@@ -200,25 +200,6 @@ namespace TheoryFinder
                 foreach (Document document in project.Documents)
                 {
 
-                    //TODOs:
-                    //  Main: Angello wants Anna and Charles to impress professors
-                    // Prioritize: a) Send me ratios of PUTs/ test methods, of UnitTest/test method for a solution  --> tonight! (google sheets)
-                    // Get it done Real quick: b) Do this per test project
-                    // Get it done Real quick: c) Do this per test class.
-                    // Prioritize: Anna knows 0
-                    // Not Prioritize Related Work
-                    // filte document/project by test (check "Test", "test", "Tests" in class name) and value is tuple of counts see line 78
-                    //if test in name:
-                    //    continue
-
-                    //commented out b/c certain documents without the keywords contain PUTs
-                    //if (!(document.Name.Contains("test") || document.Name.Contains("Test") || document.Name.Contains("Tests") || document.Name.Contains("tests")))
-                    //{
-                        //Charles knows 0
-                        //Console.WriteLine(document.Name);
-                        //continue;
-                    //}
-
                     string filepath = document.FilePath;
                     string text = File.ReadAllText(filepath);
 
