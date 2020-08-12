@@ -17,6 +17,7 @@ using Microsoft.Build;
 using Microsoft.Build.Locator;
 using System.ComponentModel;
 using System.Security.Cryptography.X509Certificates;
+using System.Linq.Expressions;
 
 namespace TheoryFinder
 {
@@ -30,7 +31,7 @@ namespace TheoryFinder
                 Console.WriteLine("Invalid Input");
                 return;
             }
-          
+
             //if (!Path.GetExtension(args[0]).Equals(".sln"))
             //{
             //    Debug.Assert(Path.GetExtension(args[0]).Equals(".slnf"), "input args[0] should be a solution file!");
@@ -53,33 +54,35 @@ namespace TheoryFinder
 
             Console.WriteLine($"Using MSBuild at '{instance.MSBuildPath}' to load projects.");
 
+
             MSBuildWorkspace workspace = MSBuildWorkspace.Create();
-            Solution solution = workspace.OpenSolutionAsync(sln).Result;
+            Console.WriteLine("####");
+            Solution solution = workspace.OpenSolutionAsync(sln).Result; //Error is here
+
+            Console.WriteLine("setting up");
 
             #region Setup
-           
+
 
             //List of possible PUT attributes 
             List<String> putAttributes = new List<string>
             {
-                "Theory"
+                "Theory",
+                "DataSource",
+                "XxxData",
+                "TestCaseSource"
             };
 
             //List of possible conventional unit test attributes
             List<String> unitTestAttributes = new List<string>
             {
-                "Test",
-                "Fact"
+                "Test", //Nunit and maybe also older xUnit
+                "Fact", //Xunit
+                "TestCase",
+                "TestMethod" //MSTest attribute
             };
 
-            //Create separate lists for PUTs/non-PUT attributes
-            //Update attributeCount as you iterate through the lists
-            Dictionary<string, int> attributeCount = new Dictionary<string, int>
-            {
-                { "Theory", 0 },
-                { "Test", 0 },
-                { "Fact", 0 }
-            };
+
 
             List<String> assertStatements = new List<string>
             {
@@ -104,6 +107,122 @@ namespace TheoryFinder
                 "AssertExists",
                 "AssertDoesNotExist",
                 "AssertMessagesWithCursorForRange",
+                "AssertNoTargetSite",
+                "AssertAll",
+                "AssertNone",
+                "AssertValueConverted",
+                "AssertDecimalTryParse",
+                "AssertNewDateTimeParseEqual",
+                "AssertNewDateTimeOffsetParseEqual",
+                "AssertIsProperty",
+                "AssertIsIndexer",
+                "AssertSingle",
+                "AssertChildrenSelected",
+                "AssertArePixelEqual",
+                "AssertThrows(",
+                "AssertContains(",
+                "AssertConstantField<",
+                "AssertParseFailure",
+                "AssertValue(",
+                "AssertTrue",
+                "AssertFalse",
+                "AssertEqualLink",
+                "AssertEqualListViewSubItem",
+                "AssertToObjectEqual",
+                "AssertExtensions.Throws",
+                "AssertAttributes",
+                "AssertTopologicallySorted",
+                "AssertEx.Equal(",
+                "AssertEx.Empty",
+                "AssertEx.SetEqual",
+                "AssertEx.AssertEqualToleratingWhitespaceDifferences",
+                "AssertEx.NotNull",
+                "AssertEx.Fail",
+                "AssertChangedTextLinesHelper",
+                "AssertSpecificDiagnostics",
+                "AssertNoAttributes",
+                "AssertReferencedIsByRefLike",
+                "AssertDeclaresType",
+                "AssertNoIsByRefLikeAttributeExists",
+                "AssertGeneratedEmbeddedAttribute",
+                "AssertNotReferencedIsByRefLikeAttribute",
+                "AssertReferencedIsUnmanagedAttribute",
+                "AssertNoIsUnmanagedAttributeExists",
+                "AssertNativeIntegerAttributes",
+                "AssertNativeIntegerAttribute(",
+                "AssertNoNativeIntegerAttributes",
+                "AssertNoNullableAttributeAssertNullableAttributes",
+                "AssertNullableAttribute",
+                "AssertNoIsReadOnlyAttributeExists",
+                "AssertProperty",
+                "AssertEx.All",
+                "AssertEx.None",
+                "AssertTupleTypeEquality",
+                "AssertTestDisplayString",
+                "AssertTupleNonElementField",
+                "AssertNonvirtualTupleElementField",
+                "AssertVirtualTupleElementField",
+                "AssertTupleTypeMembersEquality",
+                "AssertNotInstrumented",
+                "AssertInstrumented",
+                "AssertOuterIsCorrespondingLoopOfInner",
+                "AssertOuterIsCorrespondingSwitchOfInner",
+                "AssertEnabledForInheritence",
+                "AssertGetSpeculativeTypeInfo",
+                "AssertTryGetSpeculativeSemanticModel",
+                "AssertHashCodesMatch",
+                "AssertDiagnosticOptions_NullableWarningsGiven_OnlyWhenEnabledInProject",
+                "AssertDiagnosticOptions_NullableWarningsNeverGiven",
+                "AssertDiagnosticOptions_NullableWarningsGiven_UnlessDisabledByDiagnosticOptions",
+                "AssertDiagnosticOptions_NullableW_WarningsGiven_OnlyWhenEnabledInProject",
+                "AssertDiagnosticOptions_NullableW_WarningsGiven_UnlessDisabledByDiagnosticOptions",
+                "AssertEqual(",
+                "AssertContainedInDeclaratorArguments",
+                "AssertEmpty",
+                "AssertCompilationCorlib",
+                "AssertCannotConstruct",
+                "AssertRuntimeFeatureTrue",
+                "AssertNoMethodImplementation",
+                "AssertNoPropertyImplementation",
+                "AssertNoEventImplementation",
+                "AssertEqualityAndHashCode",
+                "AssertSame",
+                "AssertNoParameterHasModOpts",
+                "AssertPos",
+                "AssertCanUnify",
+                "AssertCannotUnify",
+                "AssertMappedSpanEqual",
+                "AssertEx.AreEqual",
+                "AssertTokens",
+                "AssertGoodDecimalLiteral",
+                "AssertBadDecimalLiteral",
+                "AssertEqualRoundtrip",
+                "AssertCompleteSubmission",
+                "AssertIncompleteSubmission",
+                "AssertTrimmedEqual",
+                "AssertFormatCSharp",
+                "AssertFormatVB",
+                "AssertNamesEqual",
+                "AssertMemberNamesEqual",
+                "AssertMembers",
+                "AssertEx.EqualOrDiff",
+                "AssertRelativeOrder",
+                "AssertSymbolKeysEqual",
+                "AssertExtent",
+                "AssertDiagnostics",
+                "AssertContainsType",
+                "AssertIsIntPtrPointer",
+                "AssertDumpsEqual",
+                "AssertJsonEquals",
+                "AssertLocationsEqual",
+                "AssertServerCapabilities",
+                "AssertEx.NotEqual(",
+                "AssertNoNullableAttribute(",
+                "AssertNoNullableAttributes(",
+                "AssertNotReferencedIsReadOnlyAttribute(",
+                "AssertEntryPointParameter(",
+                "AssertRuntimeFeatureFalse",
+                "AssertEx.Any(",
                 "All",
                 "AreEqual",
                 "AreNotEqual",
@@ -121,9 +240,10 @@ namespace TheoryFinder
                 "False",
                 "Greater(",
                 "GreaterOrEqual(",
+                "Ignore",
                 "InRange",
                 "Inconclusive",
-                "IsAssignableFrom",                
+                "IsAssignableFrom",
                 "IsEmpty",
                 "IsFalse",
                 "IsInstanceOf",
@@ -194,34 +314,39 @@ namespace TheoryFinder
             bool visitedProject = false;
             foreach (Project project in solution.Projects)
             {
+
+                if (Path.GetExtension(project.Name).Equals(".vcproj"))
+                    continue;
                 visitedProject = true;
                 int theoryProjCount = 0;
                 int unitProjCount = 0;
+
                 foreach (Document document in project.Documents)
                 {
                     /* Angello is testing code */
-                    //SyntaxNode  root = document.GetSyntaxRootAsync().Result;
+                    //SyntaxNode root = document.GetSyntaxRootAsync().Result;
                     //PUTCollector theoryCollector = new PUTCollector();
                     //theoryCollector.Visit(root);
-                    //Environment.Exit(0); 
+                    //Environment.Exit(0);
                     /* Angello is no longer testing code */
-                    
+
                     string filepath = document.FilePath;
                     string text = File.ReadAllText(filepath);
 
                     //int numTestMethods = getUnitTestMethods(text, "Test");
                     //int numFactMethods = getUnitTestMethods(text, "Fact");
                     //int numTheoryMethods = getPUTMethods(text, "Theory");
-                    
+
                     if (!mapDocToPUTNames.ContainsKey(filepath))
                     {
                         IEnumerable<MethodDeclarationSyntax> toAdd = getTestingMethods(text, putAttributes);
-                        if(toAdd.Count() > 0)
+                        if (toAdd.Count() > 0)
                         {
                             mapDocToPUTNames.Add(filepath, toAdd);
-                            
+                            //Console.WriteLine(filepath);
+
                         }
-                        
+
                     }
                     if (!mapDocToUnitNames.ContainsKey(filepath))
                     {
@@ -229,16 +354,16 @@ namespace TheoryFinder
                         if (toAdd.Count() > 0)
                         {
                             mapDocToUnitNames.Add(filepath, toAdd);
-                            
+
                         }
 
                     }
-                    
-                   
+
+
 
                     int numUnitMethods = getAttributeCount(text, unitTestAttributes);
                     int numPUTMethods = getAttributeCount(text, putAttributes);
-                    
+
                     //int numUnitMethods = numTestMethods + numFactMethods;
                     TheoryCount += numPUTMethods;
                     TotalCount += (numUnitMethods + numPUTMethods);
@@ -250,7 +375,7 @@ namespace TheoryFinder
                         //mapDocToRatios.Add(document.Name, new Tuple<int, int>(numPUTMethods, numUnitMethods));
                         //Console.WriteLine(numPUTMethods + " PUTs and " + numUnitMethods + " Unit Tests in " + filepath);
 
-                       
+
                     }
 
 
@@ -268,17 +393,32 @@ namespace TheoryFinder
                 Console.WriteLine("The ratio of PUT methods to unit test methods is " + TheoryCount + ":" + (TotalCount - TheoryCount));
             //printFirstLine(mapDocToPUTNames);
             //printFirstLine(mapDocToUnitNames);
-            //Console.WriteLine(getTotalTestLines(mapDocToPUTNames) + " PUT Lines");
-            //Console.WriteLine(getTotalTestLines(mapDocToUnitNames) + " Unit Test Lines");
-            /*Dictionary<string, int> assertCount = getAssertCount(assertStatements, mapDocToUnitNames);
-            foreach(KeyValuePair<string, int> element in assertCount)
+            Console.WriteLine(getTotalTestLines(mapDocToPUTNames) + " PUT Lines");
+            Console.WriteLine(getTotalTestLines(mapDocToUnitNames) + " Unit Test Lines");
+
+            Dictionary<string, int> putAssertCount = getAssertCount(assertStatements, mapDocToPUTNames);
+            /* Get parameters of assert statements
+            */
+            //getAssertParams(mapDocToPUTNames, assertStatements);
+
+            foreach (KeyValuePair<string, int> element in putAssertCount)
+            {
+                if (element.Value > 0)
+                {
+                    Console.WriteLine(element.Value + " instances of Assert." + element.Key + " in PUT Tests");
+                }
+            }
+
+            Dictionary<string, int> unitAssertCount = getAssertCount(assertStatements, mapDocToUnitNames);
+            foreach (KeyValuePair<string, int> element in unitAssertCount)
             {
                 if (element.Value > 0)
                 {
                     Console.WriteLine(element.Value + " instances of Assert." + element.Key + " in Unit Tests");
                 }
-            }*/
-            
+            }
+            #region codeIMayneedLater
+            /*
             Dictionary<string, List<List<ParameterSyntax>>> assertParameters = getAssertParameters(assertStatements, mapDocToPUTNames);
             foreach(KeyValuePair<string, List<List<ParameterSyntax>>> element in assertParameters)
             {
@@ -295,7 +435,7 @@ namespace TheoryFinder
                     }
                     Console.WriteLine();
                 }
-            }
+            }*/
             /*Dictionary<string, List<List<string>>> assertParameters = getAssertParametersAsString(assertStatements, mapDocToPUTNames);
             foreach (KeyValuePair<string, List<List<string>>> element in assertParameters)
             {
@@ -313,31 +453,127 @@ namespace TheoryFinder
                     Console.WriteLine();
                 }
             }*/
-
+            #endregion
 
 
 
         }
+        public static void getAssertParams(Dictionary<string,IEnumerable<MethodDeclarationSyntax>> mapDocToPUTNames, List<string> assertStatements)
+        {
 
-        
+            foreach(var keyValPair in mapDocToPUTNames)
+            {
+                foreach(MethodDeclarationSyntax put in keyValPair.Value)
+                {
+                    //Console.WriteLine(put);
+                    /* Charles, to number of lines for PUT/UnitTest, just body.Statements.Count*/
+                    Console.WriteLine(put.Identifier);
+                    BlockSyntax body = put.Body;
+                    //SyntaxList<StatementSyntax> statements = body.Statements;
+                    List<ExpressionStatementSyntax> expStmts= body.DescendantNodes().OfType<ExpressionStatementSyntax>().ToList();
+                    foreach (ExpressionStatementSyntax stmt in expStmts)
+                    {
+                        
+                        Console.WriteLine("====");
+                        
+                        SyntaxKind? k = stmt?.Expression?.Kind();
+                        if (k != null && k.Equals(SyntaxKind.InvocationExpression))
+                        {
+                            
+                            //Todo: perhaps double check that statement does start with string "Assert"
+                            Console.WriteLine(stmt);
+                            SeparatedSyntaxList<ArgumentSyntax> args = ((InvocationExpressionSyntax)stmt.Expression).ArgumentList.Arguments;
+                            foreach (ArgumentSyntax arg in args)
+                            {
+                                //Must Todo: Consider writing a visitor that returns all objects
+                                // arguments can be ParenthesizedLambdaExpressionSyntax,IdentiferNameSyntax, elementAccessExpression(for array access), invocationExpressions,MemberAccessExpression,BinaryExpression ,ObjectCreationExpressionSyntax
+                                Console.WriteLine(arg);
+                                //Console.WriteLine(arg.Expression.Kind());
+                            }
+                            
+                        }
+                        //var param = statement.
+                        //var exp = (LocalDeclarationStatementSyntax)statement;
+                        //Todo: Filter so that we only get asserts -- if condition may suffice
+                        bool isAssert = false;
+                        //Console.WriteLine(statement.ToString());
+                        /*foreach(string assertStatement in assertStatements)
+                        {
+                            if (assertStatement.Equals("AssertTextRange"))
+                            {
+                                Console.WriteLine("In AssertTextRange");
+                                if (statement.ToString().StartsWith("AssertTextRange"))
+                                {
+                                    Console.WriteLine(statement);
+                                }
+                            }
+                            if (!assertStatement.Equals("Assert") && assertStatement.StartsWith("Assert"))
+                            {
+                                //Console.WriteLine("In first if");
+                                if ((statement.ToString().StartsWith(assertStatement))) {
+                                    Console.WriteLine("ASSERT1!!!");
+                                    Console.WriteLine(statement);
+                                    isAssert = true;
+                                    break;
+                                }
+                                
+                                
+                            } else
+                            {
+                                if (statement.ToString().StartsWith("Assert." + assertStatement))
+                                {
+                                    isAssert = true;
+                                    Console.WriteLine("ASSERT2!!!");
+                                    Console.WriteLine(statement);
+
+                                    break;
+                                }
+                                    
+                                
+                                    
+                                
+                            }
+                        }
+                        if (isAssert)
+                        {
+                            //Console.WriteLine(statement.ToFullString());
+                        } */
+                        //if (statement.ToString().StartsWith("Assert"))
+                        //{
+                        //    Console.WriteLine(statement);
+                        //}
+                        
+                        
+                    }
+
+
+                    //Console.WriteLine(keyValPair.Key);
+                    //Console.WriteLine(put);
+                    //Console.WriteLine(put.GetType());
+
+                }
+            }
+        }
+
+
         //Dictionary can contain projects w/out PUTs/Unit Tests
         //Charles Knows 4
         //Add code the average lines of code per PUT/Unit Test in a dictionary
-        public static void printFirstLine(Dictionary<string, IEnumerable<MethodDeclarationSyntax>> dictionary) 
+        public static void printFirstLine(Dictionary<string, IEnumerable<MethodDeclarationSyntax>> dictionary)
         {
             //print first line of each method
             //Charles Knows 1
             //Google how to iterate through statements in methodDeclarationSyntax
             //Maybe use blocksyntax body()?
             int i = 0;
-            foreach(KeyValuePair<string, IEnumerable<MethodDeclarationSyntax>> element in dictionary)
+            foreach (KeyValuePair<string, IEnumerable<MethodDeclarationSyntax>> element in dictionary)
             {
-                foreach(MethodDeclarationSyntax method in element.Value)
+                foreach (MethodDeclarationSyntax method in element.Value)
                 {
                     Console.Write(i);
                     List<StatementSyntax> expressionNodes = method.DescendantNodes().OfType<StatementSyntax>().ToList();
                     int j = 0;
-                    foreach(StatementSyntax statement in expressionNodes)
+                    foreach (StatementSyntax statement in expressionNodes)
                     {
                         //Console.Write(" " + j);
                         //Console.WriteLine(statement.ToString());
@@ -351,7 +587,7 @@ namespace TheoryFinder
 
         public static double getAverageTestSize(Dictionary<string, IEnumerable<MethodDeclarationSyntax>> dictionary)
         {
-            
+
             int totalLines = 0;
             int numMethods = 0;
             foreach (KeyValuePair<string, IEnumerable<MethodDeclarationSyntax>> element in dictionary)
@@ -360,13 +596,13 @@ namespace TheoryFinder
                 {
                     numMethods++;
                     List<StatementSyntax> expressionNodes = method.DescendantNodes().OfType<StatementSyntax>().ToList();
-                    
+
                     foreach (StatementSyntax statement in expressionNodes)
                     {
                         totalLines++;
                         //Console.Write(" " + j);
                         //Console.WriteLine(statement.ToString());
-                        
+
                     }
                 }
             }
@@ -376,14 +612,14 @@ namespace TheoryFinder
         public static int getNumTestMethods(Dictionary<string, IEnumerable<MethodDeclarationSyntax>> dictionary)
         {
 
-            
+
             int numMethods = 0;
             foreach (KeyValuePair<string, IEnumerable<MethodDeclarationSyntax>> element in dictionary)
             {
                 foreach (MethodDeclarationSyntax method in element.Value)
                 {
                     numMethods++;
-                    
+
                 }
             }
             return numMethods;
@@ -393,12 +629,12 @@ namespace TheoryFinder
         {
 
             int totalLines = 0;
-     
+
             foreach (KeyValuePair<string, IEnumerable<MethodDeclarationSyntax>> element in dictionary)
             {
                 foreach (MethodDeclarationSyntax method in element.Value)
                 {
-                    
+
                     List<StatementSyntax> expressionNodes = method.DescendantNodes().OfType<StatementSyntax>().ToList();
 
                     foreach (StatementSyntax statement in expressionNodes)
@@ -445,15 +681,16 @@ namespace TheoryFinder
                                 {
                                     //check if the assert isn't contained in the list
                                     bool newStatement = true;
-                                  
-                                    /*
+
+
                                     for (int i = 1; i < asserts.Count() && newStatement; i++)
                                     {
                                         string toCheck;
                                         if (asserts[i].StartsWith("Assert"))
                                         {
                                             toCheck = asserts[i];
-                                        } else
+                                        }
+                                        else
                                         {
                                             toCheck = "Assert." + asserts[i];
                                         }
@@ -461,13 +698,14 @@ namespace TheoryFinder
                                         {
                                             newStatement = false;
                                         }
-                                    }*/
+                                    }
                                     if (newStatement)
                                     {
-                                        Console.WriteLine(statement);
+                                       // Console.WriteLine(statement);
                                     }
-                                    
+
                                 }
+                                //Console.WriteLine(statement + " in AssertCount");
                                 attributeCount++;
                             }
 
@@ -518,8 +756,8 @@ namespace TheoryFinder
                                 Console.WriteLine(") index " + statement.ToString().LastIndexOf(')'));
                                 Console.WriteLine(statement.ToString().Substring(1 + statement.ToString().IndexOf('('), statement.ToString().LastIndexOf(')') - statement.ToString().IndexOf('(') - 1));
                                 */
-                                
-                                
+
+
                                 List<ParameterSyntax> parameterList = statement.DescendantNodes().OfType<ParameterSyntax>().ToList();
                                 parameters.Add(parameterList);
                             }
@@ -530,8 +768,8 @@ namespace TheoryFinder
                 }
                 assertParameters.Add(assertStatement, parameters);
             }
-                
-            
+
+
 
             return assertParameters;
         }
@@ -622,11 +860,11 @@ namespace TheoryFinder
                 return null;
             }
             IEnumerable<MethodDeclarationSyntax> toReturn = Enumerable.Empty<MethodDeclarationSyntax>();
-            foreach(string attribute in attributes)
+            foreach (string attribute in attributes)
             {
                 toReturn = toReturn.Concat(getTestingMethods(classTextContent, attribute));
             }
-            
+
             return toReturn;
         }
 
@@ -643,7 +881,7 @@ namespace TheoryFinder
         public static int getAttributeCount(string classTextContent, List<string> attributes)
         {
             int count = 0;
-            foreach(string attribute in attributes)
+            foreach (string attribute in attributes)
             {
                 count += getTestingMethods(classTextContent, attribute).Count();
             }

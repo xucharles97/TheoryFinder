@@ -2,7 +2,9 @@
   "profiles": {
     "TheoryFinder": {
       "commandName": "Project",
-      "commandLineArgs": "\"C:\\Users\\astor\\Research\\AnnaCharles\\subjects\\trending\\azure-powershell\\src\\Accounts\\Accounts.sln\""
+      "commandLineArgs": "\"C:\\Users\\astor\\Research\\AnnaCharles\\subjects\\trending\\azure-powershell\\src\\Accounts\\Accounts.sln\"",
+      "remoteDebugEnabled": false
+>>>>>>> 31a313066d7ed9e3fd1120b737ba182f948c1fff
     }
   }
 }
