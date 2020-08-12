@@ -17,6 +17,7 @@ using Microsoft.Build;
 using Microsoft.Build.Locator;
 using System.ComponentModel;
 using System.Security.Cryptography.X509Certificates;
+using System.Linq.Expressions;
 
 namespace TheoryFinder
 {
@@ -465,12 +466,32 @@ namespace TheoryFinder
                 {
                     //Console.WriteLine(put);
                     /* Charles, to number of lines for PUT/UnitTest, just body.Statements.Count*/
+                    Console.WriteLine(put.Identifier);
                     BlockSyntax body = put.Body;
-                    SyntaxList<StatementSyntax> statements = body.Statements;
-
-                    List<StatementSyntax> likelyListOfAsserts = body.DescendantNodes().OfType<StatementSyntax>().ToList();
-                    foreach (StatementSyntax statement in likelyListOfAsserts)
+                    //SyntaxList<StatementSyntax> statements = body.Statements;
+                    List<ExpressionStatementSyntax> expStmts= body.DescendantNodes().OfType<ExpressionStatementSyntax>().ToList();
+                    foreach (ExpressionStatementSyntax stmt in expStmts)
                     {
+                        
+                        Console.WriteLine("====");
+                        
+                        SyntaxKind? k = stmt?.Expression?.Kind();
+                        if (k != null && k.Equals(SyntaxKind.InvocationExpression))
+                        {
+                            
+                            //Todo: perhaps double check that statement does start with string "Assert"
+                            Console.WriteLine(stmt);
+                            SeparatedSyntaxList<ArgumentSyntax> args = ((InvocationExpressionSyntax)stmt.Expression).ArgumentList.Arguments;
+                            foreach (ArgumentSyntax arg in args)
+                            {
+                                //Must Todo: Consider writing a visitor that returns all objects
+                                // arguments can be ParenthesizedLambdaExpressionSyntax,IdentiferNameSyntax, elementAccessExpression(for array access), invocationExpressions,MemberAccessExpression,BinaryExpression ,ObjectCreationExpressionSyntax
+                                Console.WriteLine(arg);
+                                //Console.WriteLine(arg.Expression.Kind());
+                            }
+                            
+                        }
+                        //var param = statement.
                         //var exp = (LocalDeclarationStatementSyntax)statement;
                         //Todo: Filter so that we only get asserts -- if condition may suffice
                         bool isAssert = false;
@@ -516,10 +537,10 @@ namespace TheoryFinder
                         {
                             //Console.WriteLine(statement.ToFullString());
                         } */
-                        if (statement.ToString().StartsWith("Assert"))
-                        {
-                            Console.WriteLine(statement);
-                        }
+                        //if (statement.ToString().StartsWith("Assert"))
+                        //{
+                        //    Console.WriteLine(statement);
+                        //}
                         
                         
                     }
