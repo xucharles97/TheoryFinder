@@ -76,9 +76,10 @@ namespace TheoryFinder
             //List of possible conventional unit test attributes
             List<String> unitTestAttributes = new List<string>
             {
-                "Test",
-                "Fact",
-                "TestCase"
+                "Test", //Nunit and maybe also older xUnit
+                "Fact", //Xunit
+                "TestCase",
+                "TestMethod" //MSTest attribute
             };
 
 
