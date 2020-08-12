@@ -398,7 +398,7 @@ namespace TheoryFinder
             Dictionary<string, int> putAssertCount = getAssertCount(assertStatements, mapDocToPUTNames);
             /* Get parameters of assert statements
             */
-            getAssertParams(mapDocToPUTNames, assertStatements);
+            //getAssertParams(mapDocToPUTNames, assertStatements);
 
             foreach (KeyValuePair<string, int> element in putAssertCount)
             {
