@@ -2,7 +2,7 @@
   "profiles": {
     "TheoryFinder": {
       "commandName": "Project",
-      "commandLineArgs": "\"C:\\Users\\Synthesis\\Research\\AnnaCharles\\subjects\\trending\\azure-powershell\\src\\Accounts\\Accounts.sln\""
+      "commandLineArgs": "\"C:\\Users\\astor\\Research\\AnnaCharles\\subjects\\trending\\azure-powershell\\src\\Accounts\\Accounts.sln\""
     }
   }
 }
