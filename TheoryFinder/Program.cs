@@ -397,7 +397,7 @@ namespace TheoryFinder
             Dictionary<string, int> putAssertCount = getAssertCount(assertStatements, mapDocToPUTNames);
             /* Get parameters of assert statements
             */
-            getAssertParams(mapDocToPUTNames);
+            getAssertParams(mapDocToPUTNames, assertStatements);
 
             foreach (KeyValuePair<string, int> element in putAssertCount)
             {
@@ -456,23 +456,71 @@ namespace TheoryFinder
 
 
         }
-        public static void getAssertParams(Dictionary<string,IEnumerable<MethodDeclarationSyntax>> mapDocToPUTNames)
+        public static void getAssertParams(Dictionary<string,IEnumerable<MethodDeclarationSyntax>> mapDocToPUTNames, List<string> assertStatements)
         {
+
             foreach(var keyValPair in mapDocToPUTNames)
             {
-                foreach(var put in keyValPair.Value)
+                foreach(MethodDeclarationSyntax put in keyValPair.Value)
                 {
-                    Console.WriteLine(put);
+                    //Console.WriteLine(put);
                     /* Charles, to number of lines for PUT/UnitTest, just body.Statements.Count*/
                     BlockSyntax body = put.Body;
                     SyntaxList<StatementSyntax> statements = body.Statements;
 
-                    var likelyListOfAsserts = body.DescendantNodes().OfType<MemberAccessExpressionSyntax>().ToList();
-                    foreach (MemberAccessExpressionSyntax statement in likelyListOfAsserts)
+                    List<StatementSyntax> likelyListOfAsserts = body.DescendantNodes().OfType<StatementSyntax>().ToList();
+                    foreach (StatementSyntax statement in likelyListOfAsserts)
                     {
                         //var exp = (LocalDeclarationStatementSyntax)statement;
                         //Todo: Filter so that we only get asserts -- if condition may suffice
-                        Console.WriteLine(statement);
+                        bool isAssert = false;
+                        //Console.WriteLine(statement.ToString());
+                        /*foreach(string assertStatement in assertStatements)
+                        {
+                            if (assertStatement.Equals("AssertTextRange"))
+                            {
+                                Console.WriteLine("In AssertTextRange");
+                                if (statement.ToString().StartsWith("AssertTextRange"))
+                                {
+                                    Console.WriteLine(statement);
+                                }
+                            }
+                            if (!assertStatement.Equals("Assert") && assertStatement.StartsWith("Assert"))
+                            {
+                                //Console.WriteLine("In first if");
+                                if ((statement.ToString().StartsWith(assertStatement))) {
+                                    Console.WriteLine("ASSERT1!!!");
+                                    Console.WriteLine(statement);
+                                    isAssert = true;
+                                    break;
+                                }
+                                
+                                
+                            } else
+                            {
+                                if (statement.ToString().StartsWith("Assert." + assertStatement))
+                                {
+                                    isAssert = true;
+                                    Console.WriteLine("ASSERT2!!!");
+                                    Console.WriteLine(statement);
+
+                                    break;
+                                }
+                                    
+                                
+                                    
+                                
+                            }
+                        }
+                        if (isAssert)
+                        {
+                            //Console.WriteLine(statement.ToFullString());
+                        } */
+                        if (statement.ToString().StartsWith("Assert"))
+                        {
+                            Console.WriteLine(statement);
+                        }
+                        
                         
                     }
 
@@ -631,10 +679,11 @@ namespace TheoryFinder
                                     }
                                     if (newStatement)
                                     {
-                                        Console.WriteLine(statement);
+                                       // Console.WriteLine(statement);
                                     }
 
                                 }
+                                //Console.WriteLine(statement + " in AssertCount");
                                 attributeCount++;
                             }
 
