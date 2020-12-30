@@ -20,9 +20,8 @@ In general, you will need to format the command line commands as follows:
 1. To run the TheoryFinder program and get information on the PUTs and Unit Tests, update the filepath of the TheoryFinder executable in `getSlnFiles.ps1` to match the filepath of the executable on the local machine. Then run the above command on PowerShell, with `.\getSlnFiles.ps1` as the script name.
 
 For example: 
-```
-.\getSlnFiles.ps1 ..\..\..\subjects\trending\azure-powershell\
-```
+
+```.\getSlnFiles.ps1 ..\..\..\subjects\trending\azure-powershell\```
 
 2. To get the git hash information of a particular repo, run the `.\getDirGitInfo.ps1`script. You can also use `>` to redirect the output of the script. For example:
  
